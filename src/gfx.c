@@ -5,6 +5,7 @@
 
 #define MULT 8
 
+// Required globals for rendering with SDL2
 SDL_Window* screen;
 SDL_Renderer* renderer;
 SDL_Texture* texture;
@@ -15,8 +16,7 @@ SDL_Scancode keymappings[16] = {
     SDL_SCANCODE_A, SDL_SCANCODE_S, SDL_SCANCODE_D, SDL_SCANCODE_F,
     SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V};
 
-int QUIT = 0;
-
+// SDL2 boiler plate for rendering
 void init_display()
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -35,6 +35,7 @@ void init_display()
     );
 }
 
+// Buffer frame before drawing
 void buffer_draw(Chip8* system)
 {
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
@@ -45,6 +46,7 @@ void buffer_draw(Chip8* system)
     }
 }
 
+// Draw by leveraging buffer
 void draw(Chip8* system) 
 {
     SDL_UpdateTexture(texture, NULL, system->buffer, SCREEN_WIDTH * sizeof(uint32_t));

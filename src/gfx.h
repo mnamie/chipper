@@ -2,6 +2,7 @@
 #define GFX_H_
 
 #include <SDL2/SDL.h>
+
 #include "chip8.h"
 
 #define WINDOW_HEIGHT 640

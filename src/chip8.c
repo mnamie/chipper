@@ -10,6 +10,7 @@
 
 #define DEBUG 1
 
+// Initialize Chip8 system data structure
 void init_chip8(Chip8* system)
 {
     system->pc = 0x200;
@@ -19,7 +20,7 @@ void init_chip8(Chip8* system)
     system->st = 0;
     system->draw_flag = 0;
     system->sound_flag = 0;
-    system->debug_flag = DEBUG;
+    system->debug_flag = DEBUG; // Debuf flag dictates console output
 
     for (int i = 0; i < SCREEN_HEIGHT; i++) {
         for (int j = 0; j < SCREEN_WIDTH; j++) {
@@ -58,6 +59,7 @@ void init_chip8(Chip8* system)
         0xF0, 0x80, 0xF0, 0x80, 0x80   // F
     };
 
+    // Copy fontset to memory
     for (int i = 0; i < 80; i++) {
         system->memory[i] = fontset[i];
     }
@@ -72,21 +74,27 @@ int load_rom(Chip8* system, char* filename)
         exit(EXIT_FAILURE);
     }
 
+    // Get length of rom
     fseek(rom, 0, SEEK_END);
     long rom_length = ftell(rom);
     rewind(rom);
 
+    // Initilize rom buffer
     uint8_t* rom_buffer = (uint8_t*)malloc(sizeof(uint8_t) * rom_length);
     if (rom_buffer == NULL) {
         printf("ERROR: Not enough memory\n");
         exit(EXIT_FAILURE);
     }
 
+    // Read rom into rom_buffer
     fread(rom_buffer, sizeof(uint8_t), rom_length, rom);
 
+    // Copy rom_buffer to system memory
     for (int i = 0; i < rom_length; i++) {
         system->memory[i+0x200] = rom_buffer[i];
     }
+
+    // Cleanup
     fclose(rom);
     free(rom_buffer);
 }
@@ -100,11 +108,13 @@ void emulate_cycle(Chip8* system)
     uint16_t x = (op_code & 0x0F00) >> 8;
     int16_t y = (op_code & 0x00F0) >> 4;
     
-    printf("pc: 0x%X\n", system->pc);
-    printf("opcode: 0x%X\n", op_code);
-    printf("opcode: 0x%X\n", x);
-    printf("opcode: 0x%X\n", y);
-
+    if (system->debug_flag) {
+        printf("pc: 0x%X\n", system->pc);
+        printf("opcode: 0x%X\n", op_code);
+        printf("opcode: 0x%X\n", x);
+        printf("opcode: 0x%X\n", y);
+    }
+    
     // Mask to get "first nibble"
     switch(op_code & 0xF000) {
         case 0x0000:
