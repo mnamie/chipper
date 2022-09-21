@@ -1,0 +1,5 @@
+build/*
+chipper
+*.ch8
+*/.vscode/*
+.vscode
