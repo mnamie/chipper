@@ -78,7 +78,7 @@ void op_se_compare(Chip8* system, uint16_t* op_code)
 }
 
 // 6XNN: Set Vx equal to NN
-void op_ld(Chip8* system, uint16_t* op_code)
+void op_ld_vx(Chip8* system, uint16_t* op_code)
 {
     if (system->debug_flag == 1) { printf("[OK] 0x%X: 6XNN\n", *op_code); }
     uint16_t x = (*op_code & 0x0F00) >> 8;
@@ -92,6 +92,101 @@ void op_add(Chip8* system, uint16_t *op_code)
     if (system->debug_flag == 1) { printf("[OK] 0x%X: 7XNN\n", *op_code); }
     uint16_t x = (*op_code & 0x0F00) >> 8;
     system->V[x] = system->V[x] + (*op_code & 0x00FF);
+    system->pc += 2;
+}
+
+// 8XY0: LD Vx, Vy
+void op_ld_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY0\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[x] = system->V[y];
+    system->pc += 2;
+}
+
+// 8XY1: ADD Vx, Vy
+void op_or_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY1\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[x] = system->V[x] | system->V[y];
+    system->pc += 2;
+}
+
+// 8XY2: AND Vx, Vy
+void op_and_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY2\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[x] = system->V[x] & system->V[y];
+    system->pc += 2;
+}
+
+// 8XY3: AND Vx, Vy
+void op_xor_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY3\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[x] = system->V[x] ^ system->V[y];
+    system->pc += 2;
+}
+
+// 8XY4: ADD Vx, Vy
+void op_add_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY4\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[0xF] = (system->V[x] + system->V[y] > 0xFF) ? 1 : 0;
+    system->V[x] += system->V[y];
+    system->pc += 2;
+}
+
+// 8XY5: SUB Vx, Vy
+void op_sub_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY5\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[0xF] = (system->V[x] > system->V[y]) ? 1 : 0;
+    system->V[x] -= system->V[y];
+    system->pc += 2;
+}
+
+// 8XY6: SHR Vx, Vy
+void op_shr_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY6\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[0xF] = system->V[x] & 0x1;
+    system->V[x] = (system->V[y] >> 1);
+    system->pc += 2;
+}
+
+// 8XY7: SUBN Vx, Vy
+void op_subn_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY7\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[0xF] = (system->V[y] > system->V[x]) ? 1 : 0;
+    system->V[x] = (system->V[y] - system->V[x]);
+    system->pc += 2;
+}
+
+// 8XYE: SHL Vx, Vy
+void op_shl_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XYE\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int16_t y = (*op_code & 0x00F0) >> 4;
+    system->V[0xF] = (system->V[x] >> 7) & 0x1;
+    system->V[x] = (system->V[x] << 1);
     system->pc += 2;
 }
 

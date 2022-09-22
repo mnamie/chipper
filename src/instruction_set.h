@@ -12,8 +12,17 @@ void op_call(Chip8* system, uint16_t* op_code);
 void op_se(Chip8* system, uint16_t* op_code);
 void op_sne(Chip8* system, uint16_t* op_code);
 void op_se_compare(Chip8* system, uint16_t* op_code);
-void op_ld(Chip8* system, uint16_t* op_code);
+void op_ld_vx(Chip8* system, uint16_t* op_code);
 void op_add(Chip8* system, uint16_t *op_code);
+void op_ld_vx_vy(Chip8* system, uint16_t* op_code);
+void op_or_vx_vy(Chip8* system, uint16_t* op_code);
+void op_and_vx_vy(Chip8* system, uint16_t* op_code);
+void op_xor_vx_vy(Chip8* system, uint16_t* op_code);
+void op_add_vx_vy(Chip8* system, uint16_t* op_code);
+void op_sub_vx_vy(Chip8* system, uint16_t* op_code);
+void op_shr_vx_vy(Chip8* system, uint16_t* op_code);
+void op_subn_vx_vy(Chip8* system, uint16_t* op_code);
+void op_shl_vx_vy(Chip8* system, uint16_t* op_code);
 void op_ld_i(Chip8* system, uint16_t* op_code);
 void op_drw(Chip8* system, uint16_t* op_code);
 

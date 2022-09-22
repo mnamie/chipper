@@ -116,7 +116,7 @@ void emulate_cycle(Chip8* system)
     }
     
     // Mask to get "first nibble"
-    switch(op_code & 0xF000) {
+    switch (op_code & 0xF000) {
         case 0x0000:
             switch (op_code & 0x00FF) {
                 // 00E0: Clear screen
@@ -162,14 +162,58 @@ void emulate_cycle(Chip8* system)
 
         // 6XNN: Set Vx equal to NN
         case 0x6000:
-            op_ld(system, &op_code);
+            op_ld_vx(system, &op_code);
             break;
 
         // 7XNN: Add NN to X
         case 0x7000:
             op_add(system, &op_code);
             break;
-        
+
+        // 8000 Cases
+        case 0x8000:
+            switch (op_code & 0x000F) {
+                case 0x0000:
+                    op_ld_vx_vy(system, &op_code);
+                    break;
+
+                case 0x0001:
+                    op_or_vx_vy(system, &op_code);
+                    break;
+
+                case 0x0002:
+                    op_and_vx_vy(system, &op_code);
+                    break;
+
+                case 0x0003:
+                    op_xor_vx_vy(system, &op_code);
+                    break;
+
+                case 0x0004:
+                    op_add_vx_vy(system, &op_code);
+                    break;
+
+                case 0x0005:
+                    op_sub_vx_vy(system, &op_code);
+                    break;
+
+                case 0x0006:
+                    op_shr_vx_vy(system, &op_code);
+                    break;
+
+                case 0x0007:
+                    op_subn_vx_vy(system, &op_code);
+                    break;
+
+                case 0x000E:
+                    op_shl_vx_vy(system, &op_code);
+                    break;
+
+                default:
+                    printf("[FAILED] Unknown op code: 0x%X\n", op_code);
+                    break;
+            }
+
         // ANNN: Set index register I
         case 0xA000:
             op_ld_i(system, &op_code);
