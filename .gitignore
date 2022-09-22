@@ -1,5 +1,4 @@
-build/*
+build/
 chipper
 *.ch8
-*/.vscode/*
-.vscode
+.vscode/
