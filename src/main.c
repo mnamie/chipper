@@ -1,6 +1,7 @@
 #include "chip8.h"
 #include "gfx.h"
 
+#include <SDL2/SDL.h>
 #include <stdio.h>
 
 int main(int argc, char** argv)
@@ -22,7 +23,14 @@ int main(int argc, char** argv)
     init_display();
 
     // Emulation loop
-    while (1) {
+    uint run = 1;
+    SDL_Event e;
+    while (run) {
+        // Event polling from SDL
+        while(SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) run = 0;
+        }
+        
         // Fetch, decode, execute cycle
         emulate_cycle(&chip8);
         

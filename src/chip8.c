@@ -121,79 +121,63 @@ void emulate_cycle(Chip8* system)
             switch (op_code & 0x00FF) {
                 // 00E0: Clear screen
                 case 0x00E0:
-                    op_clear_screen(system, &op_code);
+                    op_cls(system, &op_code);
                     break;
 
+                // OOEE: Return
                 case 0x00EE:
-                    printf("[OK] 0x%X: 00EE\n", op_code);
-                    system->sp--;
-                    system->pc = system->stack[system->sp];
-                    system->pc += 2;
+                    op_ret(system, &op_code);
                     break;
                 
                 default:
                     printf("[FAILED] Unknown opcode: 0x%X\n", op_code);
                     break;
             }
-            system->pc += 2;
             break;
         
         // 1NNN: Jump to NNN
         case 0x1000:
-            printf("[OK] 0x%X: 1NNN\n", op_code);
-            system->pc = op_code & 0x0FFF;
+            op_jp(system, &op_code);
+            break;
+
+        // 2NNN: Call
+        case 0x2000:
+            op_call(system, &op_code);
+            break;
+
+        // 3XNN: Skip next if x == NN
+        case 0x3000:
+            op_se(system, &op_code);
+            break;
+
+        // 4XNN: Skip next if x != NN
+        case 0x4000:
+            op_sne(system, &op_code);
+            break;
+
+        // 5XY0: Skip next insturction if Vx == Vy
+        case 0x5000:
+            op_se_compare(system, &op_code);
             break;
 
         // 6XNN: Set Vx equal to NN
         case 0x6000:
-            printf("[OK] 0x%X: 6XNN\n", op_code);
-            system->V[x] = (op_code & 0x00FF);
-            system->pc += 2;
+            op_ld(system, &op_code);
             break;
 
         // 7XNN: Add NN to X
         case 0x7000:
-            printf("[OK] 0x%X: 7XNN\n", op_code);
-            system->V[x] = system->V[x] + (op_code & 0x00FF);
-            system->pc += 2;
+            op_add(system, &op_code);
             break;
         
         // ANNN: Set index register I
         case 0xA000:
-            printf("[OK] 0x%X: ANNN\n", op_code);
-            system->I = (op_code & 0x0FFF);
-            system->pc += 2;
+            op_ld_i(system, &op_code);
             break;
 
         // DXYN: Display/draw
         case 0xD000:
-            printf("[OK] 0x%X: DXYN\n", op_code);
-
-            uint16_t x_loc = system->V[x];
-            uint16_t y_loc = system->V[y];
-            uint16_t sprite_height = (op_code & 0x000F);
-            
-            // Set collision flag to false (default)
-            system->V[0xF] = 0;
-            
-            uint16_t px;
-
-            for (int yline = 0; yline < sprite_height; yline++) {
-                // Pixel value from memory at location I
-                px = system->memory[system->I + yline];
-
-                // Loop through 8 bits of row
-                for (int xline = 0; xline < 8; xline++) {
-                    if ((px & (0x80 >> xline)) != 0) {
-                        if (system->display[y_loc + yline][x_loc + xline] == 1) {
-                            system->V[0xF] = 1;
-                        }
-                        system->display[y_loc + yline][x_loc + xline] ^= 1;
-                    }
-                }
-            }
-            system->draw_flag = 1;
-            system->pc += 2;
+            op_drw(system, &op_code);
             break;
 
         // ERROR
