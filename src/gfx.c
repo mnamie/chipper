@@ -152,6 +152,7 @@ uint process_input(Chip8* system)
                     case SDLK_x:
                         if (system->debug_flag == 1) { printf("[KEYUP] x\n"); }
                         system->keypad[0] = 0;
+                        run = 0;
                         break;
                     
                     case SDLK_1:
