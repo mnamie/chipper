@@ -3,21 +3,25 @@
 
 #include <SDL2/SDL.h>
 
+SDL_Window* screen;
+SDL_Renderer* renderer;
+SDL_Texture* texture;
+
 // SDL2 boiler plate for rendering
-void init_display(Chip8IO* io)
+void init_display()
 {
     SDL_Init(SDL_INIT_VIDEO);
-    io->screen = SDL_CreateWindow(
-        "Chip-8 Emu", 
+    screen = SDL_CreateWindow(
+        "Chipper", 
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 
         WINDOW_WIDTH, 
         WINDOW_HEIGHT, 
         SDL_WINDOW_SHOWN
     );
-    io->renderer = SDL_CreateRenderer(io->screen, -1, SDL_RENDERER_ACCELERATED);
-    io->texture = SDL_CreateTexture(
-        io->renderer, 
+    renderer = SDL_CreateRenderer(screen, -1, SDL_RENDERER_ACCELERATED);
+    texture = SDL_CreateTexture(
+        renderer, 
         SDL_PIXELFORMAT_RGBA8888, 
         SDL_TEXTUREACCESS_TARGET, 
         SCREEN_WIDTH, 
@@ -37,12 +41,12 @@ void buffer_draw(Chip8* system)
 }
 
 // Draw by leveraging buffer
-void draw(Chip8* system, Chip8IO* io) 
+void draw(Chip8* system)
 {
-    SDL_UpdateTexture(io->texture, NULL, system->buffer, SCREEN_WIDTH * sizeof(uint32_t));
-    SDL_RenderClear(io->renderer);
-    SDL_RenderCopy(io->renderer, io->texture, NULL, NULL);
-    SDL_RenderPresent(io->renderer);
+    SDL_UpdateTexture(texture, NULL, system->buffer, SCREEN_WIDTH * sizeof(uint32_t));
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 }
 
 uint process_input(Chip8* system)

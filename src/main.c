@@ -20,15 +20,13 @@ int main(int argc, char** argv)
     // Load roam into chip8 system
     load_rom(&chip8, argv[1]);
 
-    // Init SDL2 display
-    Chip8IO io;
-    init_display(&io);
+    init_display();
 
     // Emulation loop
     uint run = 1;
     while (run) {
         // Event polling from SDL
-        run = process_input(&chip8);
+        // run = process_input(&chip8);
         
         // Fetch, decode, execute cycle
         emulate_cycle(&chip8);
@@ -36,7 +34,7 @@ int main(int argc, char** argv)
         // Draw if flag is set
         if (chip8.draw_flag) {
             buffer_draw(&chip8);
-            draw(&chip8, &io);
+            draw(&chip8);
         }
 
         // Timing
