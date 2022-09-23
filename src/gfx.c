@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#define MULT 8
+
 SDL_Window* screen;
 SDL_Renderer* renderer;
 SDL_Texture* texture;
@@ -12,14 +14,14 @@ void init_display()
 {
     SDL_Init(SDL_INIT_VIDEO);
     screen = SDL_CreateWindow(
-        "Chipper", 
+        "WoodChipper", 
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 
         WINDOW_WIDTH, 
         WINDOW_HEIGHT, 
-        SDL_WINDOW_SHOWN
+        0
     );
-    renderer = SDL_CreateRenderer(screen, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(screen, -1, 0);
     texture = SDL_CreateTexture(
         renderer, 
         SDL_PIXELFORMAT_RGBA8888, 
@@ -47,6 +49,7 @@ void draw(Chip8* system)
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
+    system->draw_flag = 0;
 }
 
 uint process_input(Chip8* system)

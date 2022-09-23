@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     uint run = 1;
     while (run) {
         // Event polling from SDL
-        // run = process_input(&chip8);
+        run = process_input(&chip8);
         
         // Fetch, decode, execute cycle
         emulate_cycle(&chip8);

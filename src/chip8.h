@@ -14,9 +14,9 @@ typedef struct Chip8 {
     uint16_t pc;
     uint8_t sp;
     uint16_t stack[16];
+    uint8_t keypad[KEYPAD_SIZE];
     uint8_t display[SCREEN_HEIGHT][SCREEN_WIDTH];
     uint32_t buffer[SCREEN_HEIGHT * SCREEN_WIDTH];
-    uint8_t keypad[KEYPAD_SIZE];
     uint8_t dt;
     uint8_t st;
     uint8_t draw_flag;
