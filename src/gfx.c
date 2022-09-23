@@ -3,8 +3,6 @@
 
 #include <SDL2/SDL.h>
 
-#define MULT 8
-
 SDL_Window* screen;
 SDL_Renderer* renderer;
 SDL_Texture* texture;
