@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <unistd.h>
 
 int main(int argc, char** argv)
 {
@@ -20,16 +21,14 @@ int main(int argc, char** argv)
     load_rom(&chip8, argv[1]);
 
     // Init SDL2 display
-    init_display();
+    Chip8IO io;
+    init_display(&io);
 
     // Emulation loop
     uint run = 1;
-    SDL_Event e;
     while (run) {
         // Event polling from SDL
-        while(SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) run = 0;
-        }
+        run = process_input(&chip8);
         
         // Fetch, decode, execute cycle
         emulate_cycle(&chip8);
@@ -37,7 +36,7 @@ int main(int argc, char** argv)
         // Draw if flag is set
         if (chip8.draw_flag) {
             buffer_draw(&chip8);
-            draw(&chip8);
+            draw(&chip8, &io);
         }
 
         // Timing

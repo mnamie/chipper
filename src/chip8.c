@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-#define DEBUG 1
+#define KEY_DEBUG 1
 
 // Initialize Chip8 system data structure
 void init_chip8(Chip8* system)
@@ -20,7 +20,7 @@ void init_chip8(Chip8* system)
     system->st = 0;
     system->draw_flag = 0;
     system->sound_flag = 0;
-    system->debug_flag = DEBUG; // Debuf flag dictates console output
+    system->debug_flag = KEY_DEBUG; // Debug flag dictates console output
 
     for (int i = 0; i < SCREEN_HEIGHT; i++) {
         for (int j = 0; j < SCREEN_WIDTH; j++) {
@@ -62,6 +62,11 @@ void init_chip8(Chip8* system)
     // Copy fontset to memory
     for (int i = 0; i < 80; i++) {
         system->memory[i] = fontset[i];
+    }
+
+    // Initialize keypad
+    for (int i = 0; i < KEYPAD_SIZE; i++) {
+        system->keypad[i] = 0;
     }
 
 }
