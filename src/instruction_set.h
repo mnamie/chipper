@@ -23,8 +23,12 @@ void op_sub_vx_vy(Chip8* system, uint16_t* op_code);
 void op_shr_vx_vy(Chip8* system, uint16_t* op_code);
 void op_subn_vx_vy(Chip8* system, uint16_t* op_code);
 void op_shl_vx_vy(Chip8* system, uint16_t* op_code);
+void op_sne_vx_vy(Chip8* system, uint16_t* op_code);
 void op_ld_i(Chip8* system, uint16_t* op_code);
+void op_jp_v0(Chip8* system, uint16_t* op_code);
+void op_rnd_vx(Chip8* system, uint16_t* op_code);
 void op_drw(Chip8* system, uint16_t* op_code);
-
+void op_sne_vx(Chip8* system, uint16_t* op_code);
+void op_sknp_vx(Chip8* system, uint16_t* op_code);
 
 #endif

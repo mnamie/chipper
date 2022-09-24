@@ -219,14 +219,74 @@ void emulate_cycle(Chip8* system)
                     break;
             }
 
+        // 9XY0: Skip next instruction when Vx != Vy
+        case 0x9000:
+            op_sne_vx_vy(system, &op_code);
+            break;
+
         // ANNN: Set index register I
         case 0xA000:
             op_ld_i(system, &op_code);
+            break;
+        
+        // BNNN: Jump to location NNN + V0
+        case 0xB000:
+            op_jp_v0(system, &op_code);
+            break;
+
+        // CXKK: Set Vx equal to a random byte AND KK
+        case 0xC000:
+            op_rnd_vx(system, &op_code);
             break;
 
         // DXYN: Display/draw
         case 0xD000:
             op_drw(system, &op_code);
+            break;
+
+        case 0xE000:
+            switch (op_code & 0x00FF) {
+                // EX9E: Skip next insturction if key with the valu eof Vx is pressed
+                case 0x09E:
+                    op_sne_vx(system, &op_code);
+                    break;
+
+                // EXA1: Skip next instruction if key with the value of Vx is not pressed
+                case 0x00A1:
+                    op_sknp_vx(system, &op_code);
+                    break;
+            }
+            break;
+
+        case 0xF000:
+            switch (op_code & 0x00FF) {
+                case 0x0007:
+                    break;
+
+                case 0x000A:
+                    break;
+
+                case 0x0015:
+                    break;
+
+                case 0x0018:
+                    break;
+                
+                case 0x001E:
+                    break;
+
+                case 0x0029:
+                    break;
+
+                case 0x0033:
+                    break;
+
+                case 0x0055:
+                    break;
+
+                case 0x0065:
+                    break;
+            }
             break;
 
         // ERROR

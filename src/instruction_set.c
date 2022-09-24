@@ -2,6 +2,7 @@
 #include "chip8.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 // 00E0: Clear screen
 void op_cls(Chip8* system, uint16_t* op_code)
@@ -190,11 +191,43 @@ void op_shl_vx_vy(Chip8* system, uint16_t* op_code)
     system->pc += 2;
 }
 
+// 9XY0: SNE Vx, Vy - Skip next instruction if Vx != Vy
+void op_sne_vx_vy(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: 9XY0\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    uint16_t y = (*op_code & 0x00F0) >> 4;
+    if (system->V[x] != system->V[y]) {
+        system->pc += 2;
+    }
+    system->pc += 2;
+}
+
 // ANNN: Set index register I
 void op_ld_i(Chip8* system, uint16_t* op_code)
 {
     if (system->debug_flag == 1) { printf("[OK] 0x%X: ANNN\n", *op_code); }
     system->I = (*op_code & 0x0FFF);
+    system->pc += 2;
+}
+
+// BNNN: Jump to location NNN + V0
+void op_jp_v0(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: BNNN\n", *op_code); }
+    uint16_t nnn = *op_code & 0x0FFF;
+    system->pc = system->V[0] + nnn;
+}
+
+// CXKK: Set Vx equal to a random byte AND KK
+void op_rnd_vx(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: CXKK\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    uint16_t kk = (*op_code & 0x00FF);
+    uint8_t random_num = rand() % 256;
+
+    system->V[x] = random_num & kk;
     system->pc += 2;
 }
 
@@ -229,5 +262,29 @@ void op_drw(Chip8* system, uint16_t* op_code)
         }
     }
     system->draw_flag = 1;
+    system->pc += 2;
+}
+
+// EX9E: Skip next insturction if key with the valu eof Vx is pressed
+void op_sne_vx(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: EX9E\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    uint16_t key = system->V[x];
+    if (system->keypad[key]) {
+        system->pc += 2;
+    }
+    system->pc += 2;
+}
+
+// EXA1: Skip next instruction if key with the value of Vx is not pressed
+void op_sknp_vx(Chip8* system, uint16_t* op_code)
+{
+    if (system->debug_flag == 1) { printf("[OK] 0x%X: EXA1\n", *op_code); }
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    uint16_t key = system->V[x];
+    if (!system->keypad[key]) {
+        system->pc += 2;
+    }
     system->pc += 2;
 }
