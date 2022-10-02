@@ -30,5 +30,14 @@ void op_rnd_vx(Chip8* system, uint16_t* op_code);
 void op_drw(Chip8* system, uint16_t* op_code);
 void op_sne_vx(Chip8* system, uint16_t* op_code);
 void op_sknp_vx(Chip8* system, uint16_t* op_code);
+void op_ld_vx_dt(Chip8* system, uint16_t* op_code);
+void op_ld_vx_k(Chip8* system, uint16_t* op_code);
+void op_ld_dt_vx(Chip8* system, uint16_t* op_code);
+void op_ld_st_vx(Chip8* system, uint16_t* op_code);
+void op_add_i_vx(Chip8* system, uint16_t* op_code);
+void op_ld_f_vx(Chip8* system, uint16_t* op_code);
+void op_ld_b_vx(Chip8* system, uint16_t* op_code);
+void op_ld_i_vx(Chip8* system, uint16_t* op_code);
+void op_ld_vx_i(Chip8* system, uint16_t* op_code);
 
 #endif

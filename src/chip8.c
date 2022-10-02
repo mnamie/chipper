@@ -261,30 +261,51 @@ void emulate_cycle(Chip8* system)
         case 0xF000:
             switch (op_code & 0x00FF) {
                 case 0x0007:
+                    // FX07: LD Vx, DT - the value of DT is placed into Vx
+                    op_ld_vx_dt(system, &op_code);
                     break;
 
                 case 0x000A:
+                    // FX0A: LD Vx, K - the value of K is placed into Vx
+                    op_ld_vx_k(system, &op_code);
                     break;
 
                 case 0x0015:
+                    // FX15: LD DT, Vx - set delay timer equal to Vx
+                    op_ld_dt_vx(system, &op_code);
                     break;
 
                 case 0x0018:
+                    // FX18: LD ST, Vx - set sound timer = Vx
+                    op_ld_st_vx(system, &op_code);
                     break;
                 
                 case 0x001E:
+                    // FX1E - ADD I, Vx - set I = I + Vx
+                    op_add_i_vx(system, &op_code);
                     break;
 
                 case 0x0029:
+                    // FX29: LD F, Vx - set I = location of sprite for digit Vx
+                    op_ld_f_vx(system, &op_code);
                     break;
 
                 case 0x0033:
+                    // FX33: LD B, Vx - store BCD representation of Vx in memory locations\
+                    // I, I+1, I+2
+                    op_ld_b_vx(system, &op_code);
                     break;
 
                 case 0x0055:
+                    // FX55: LD [I], Vx - store registers V0 -> Vx in memory starting at
+                    // location I
+                    op_ld_i_vx(system, &op_code);
                     break;
 
                 case 0x0065:
+                    // FX65: LD Vx, [I] - read registers V0 -> Vx from memory starting at
+                    // location I
+                    op_ld_vx_i(system, &op_code);
                     break;
             }
             break;

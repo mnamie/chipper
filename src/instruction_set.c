@@ -288,3 +288,106 @@ void op_sknp_vx(Chip8* system, uint16_t* op_code)
     }
     system->pc += 2;
 }
+
+// FX07: LD Vx, DT - the value of DT is placed into Vx
+void op_ld_vx_dt(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    system->V[x] = system->dt;
+    system->pc += 2;
+}
+
+// FX0A: LD Vx, K - the value of K is placed into Vx
+void op_ld_vx_k(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    int flag = 0;
+
+    for (int i = 0; i < sizeof(system->V); i++) {
+        if (system->V[i]) {
+            system->V[x] = i;
+            flag = 1;
+        }
+    }
+    if (flag == 0) {
+        return;
+    }
+    system->pc += 2;
+}
+
+// FX15: LD DT, Vx - set delay timer equal to Vx
+void op_d_dt_vx(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    system->dt = system->V[x];
+    system->pc += 2;
+}
+
+// FX18: LD ST, Vx - set sound timer = Vx
+void op_ld_st_vx(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    system->st = system->V[x];
+    system->pc += 2;
+}
+
+// FX1E: ADD I, Vx - set I = I + Vx
+void op_add_i_vx(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    system->I = system->I + system->V[x];
+    system->pc += 2;
+}
+
+// FX29: LD F, Vx - set I = location of sprite for digit Vx
+void op_ld_f_vx(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    uint16_t digit = system->V[x];
+    system->I = 5 * digit;
+    system->pc += 2;
+}
+
+// FX33: LD B, Vx - store BCD representation of Vx in memory locations\
+// I, I+1, I+2
+void op_ld_b_vx(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+    uint16_t value = system->V[x];
+
+    system->memory[system->I +2] = value % 10;
+    value /= 10;
+
+    system->memory[system->I + 1] = value % 10;
+    value /= 10;
+
+    system->memory[system->I] = value % 10;
+    
+    system->pc += 2;
+}
+
+// FX55: LD [I], Vx - store registers V0 -> Vx in memory starting at
+// location I
+void op_ld_i_vx(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+
+    for (uint16_t i = 0; i < x; i++) {
+        system->memory[system->I + i] = system->V[i];
+    }
+    
+    system->pc += 2;
+}
+
+// FX65: LD Vx, [I] - read registers V0 -> Vx from memory starting at
+// location I
+void op_ld_vx_i(Chip8* system, uint16_t* op_code)
+{
+    uint16_t x = (*op_code & 0x0F00) >> 8;
+
+    for (uint16_t i = 0; i < x; i++) {
+        system->V[i] = system->memory[system->I + i];
+    }
+
+    system->pc += 2;
+}
