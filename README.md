@@ -1,8 +1,8 @@
 # Chipper
 
-The CHIP8 emulator for Linux
+Yet another CHIP8 emulator for Linux!
 
-### Insturctions
+### Instructions
 
 1. Clone repository
 2. Run `make` in the top directory
