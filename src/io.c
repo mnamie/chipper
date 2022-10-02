@@ -1,4 +1,4 @@
-#include "gfx.h"
+#include "io.h"
 #include "chip8.h"
 
 #include <SDL2/SDL.h>
@@ -8,11 +8,11 @@ SDL_Renderer* renderer;
 SDL_Texture* texture;
 
 // SDL2 boiler plate for rendering
-void init_display()
+void init_display(const char* name)
 {
     SDL_Init(SDL_INIT_VIDEO);
     screen = SDL_CreateWindow(
-        "WoodChipper", 
+        name, 
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 
         WINDOW_WIDTH, 
@@ -50,13 +50,26 @@ void draw(Chip8* system)
     system->draw_flag = 0;
 }
 
-uint process_input(Chip8* system)
+uint process_input(Chip8* system, SDL_Event* e)
 {
-    SDL_Event e;
     uint run = 1;
+    if (system->step_flag) {
+        while (1) {
+            if (SDL_PollEvent(e)) {
+                if (e->type == SDL_QUIT) return 0;
+                if (e->type == SDL_KEYDOWN) {
+                    if (e->key.keysym.sym == SDLK_n) {
+                        system->step_flag = 0;
+                        return 1;
+                    }
+                    return 1;
+                }
+            }
+        }
+    }
 
-    while(SDL_PollEvent(&e)) {
-        switch (e.type) {
+    if (SDL_PollEvent(e)) {
+        switch (e->type) {
             // Poll for quit
             case SDL_QUIT:
                 run = 0;
@@ -64,7 +77,7 @@ uint process_input(Chip8* system)
 
             // Poll keydown
             case SDL_KEYDOWN:
-                switch (e.key.keysym.sym) {
+                switch (e->key.keysym.sym) {
                     case SDLK_x:
                         if (system->debug_flag == 1) { printf("[KEYDOWN] x\n"); }
                         system->keypad[0] = 1;
@@ -149,7 +162,7 @@ uint process_input(Chip8* system)
             
             // Poll keyup
             case SDL_KEYUP:
-                switch (e.key.keysym.sym) {
+                switch (e->key.keysym.sym) {
                     case SDLK_x:
                         if (system->debug_flag == 1) { printf("[KEYUP] x\n"); }
                         system->keypad[0] = 0;
@@ -229,6 +242,10 @@ uint process_input(Chip8* system)
                     case SDLK_v:
                         if (system->debug_flag == 1) { printf("[KEYUP] v\n"); }
                         system->keypad[15] = 0;
+                        break;
+
+                    case SDLK_m:
+                        system->step_flag = 1;
                         break;
                 }
                 break;

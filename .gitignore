@@ -1,4 +1,6 @@
 build/
 chipper
 *.ch8
+*.c8
+*.rom
 .vscode/

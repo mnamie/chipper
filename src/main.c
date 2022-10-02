@@ -1,5 +1,5 @@
 #include "chip8.h"
-#include "gfx.h"
+#include "io.h"
 
 #include <SDL2/SDL.h>
 #include <stdio.h>
@@ -15,18 +15,19 @@ int main(int argc, char** argv)
 
     // Init chip8 system struct and initialize
     Chip8 chip8;
-    init_chip8(&chip8);
+    init_chip8(&chip8, 1);
 
     // Load roam into chip8 system
     load_rom(&chip8, argv[1]);
 
-    init_display();
+    init_display("Chipper");
 
     // Emulation loop
     uint run = 1;
+    SDL_Event e;
     while (run) {
         // Event polling from SDL
-        run = process_input(&chip8);
+        run = process_input(&chip8, &e);
         
         // Fetch, decode, execute cycle
         emulate_cycle(&chip8);
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
         }
 
         // Timing
-        usleep(1500);
+        usleep(2);
     }
 
     return 0;

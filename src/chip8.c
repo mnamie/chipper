@@ -8,10 +8,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-#define KEY_DEBUG 1
-
 // Initialize Chip8 system data structure
-void init_chip8(Chip8* system)
+void init_chip8(Chip8* system, int debug)
 {
     system->pc = 0x200;
     system->I = 0;
@@ -20,8 +18,9 @@ void init_chip8(Chip8* system)
     system->st = 0;
     system->draw_flag = 0;
     system->sound_flag = 0;
-    system->debug_flag = KEY_DEBUG; // Debug flag dictates console output
-
+    system->debug_flag = debug; // Debug flag dictates console output
+    system->step_flag = 0;
+    
     for (int i = 0; i < SCREEN_HEIGHT; i++) {
         for (int j = 0; j < SCREEN_WIDTH; j++) {
             system->display[i][j] = 0;
@@ -110,15 +109,14 @@ void emulate_cycle(Chip8* system)
     system->sound_flag = 0;
 
     uint16_t op_code = system->memory[system->pc] << 8 | system->memory[system->pc+1];
-    uint16_t x = (op_code & 0x0F00) >> 8;
-    int16_t y = (op_code & 0x00F0) >> 4;
     
     if (system->debug_flag) {
         printf("pc: 0x%X\n", system->pc);
         printf("opcode: 0x%X\n", op_code);
-        printf("opcode: 0x%X\n", x);
-        printf("opcode: 0x%X\n", y);
     }
+
+    // Increment PC
+    system->pc += 2;
     
     // Mask to get "first nibble"
     switch (op_code & 0xF000) {
@@ -218,6 +216,7 @@ void emulate_cycle(Chip8* system)
                     printf("[FAILED] Unknown op code: 0x%X\n", op_code);
                     break;
             }
+            break;
 
         // 9XY0: Skip next instruction when Vx != Vy
         case 0x9000:
@@ -316,4 +315,7 @@ void emulate_cycle(Chip8* system)
             system->pc += 2;
             break;
     }
+
+    if (system->dt > 0) system->dt--;
+    if (system->st > 0) system->st--;
 }

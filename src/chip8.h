@@ -22,9 +22,10 @@ typedef struct Chip8 {
     uint8_t draw_flag;
     uint8_t sound_flag;
     uint8_t debug_flag;
+    uint8_t step_flag;
 } Chip8;
 
-void init_chip8(Chip8* system);
+void init_chip8(Chip8* system, int debug);
 int load_rom(Chip8* system, char* filename);
 void emulate_cycle(Chip8* system);
 
