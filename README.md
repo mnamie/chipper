@@ -12,6 +12,7 @@ Yet another CHIP8 emulator for Linux!
 ### Current Status:
 
 All Op-Codes implemented
+
 Passing CHIP-8 test ROMs
 
 ### To-Do:
