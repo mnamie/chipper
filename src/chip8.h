@@ -1,5 +1,5 @@
-#ifndef CHIP_H_
-#define CHIP_H_
+#ifndef _CHIP_H_
+#define _CHIP_H_
 
 #include <stdint.h>
 

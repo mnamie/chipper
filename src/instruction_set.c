@@ -113,7 +113,7 @@ void op_and_vx_vy(Chip8* system, uint16_t* op_code)
     if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY2\n", *op_code); }
     uint16_t x = (*op_code & 0x0F00) >> 8;
     int16_t y = (*op_code & 0x00F0) >> 4;
-    system->V[x] = system->V[x] & system->V[y];
+    system->V[x] &= system->V[y];
 }
 
 // 8XY3: AND Vx, Vy
@@ -145,14 +145,13 @@ void op_sub_vx_vy(Chip8* system, uint16_t* op_code)
     system->V[x] -= system->V[y];
 }
 
-// 8XY6: SHR Vx, Vy
+// 8XY6: SHR Vx
 void op_shr_vx_vy(Chip8* system, uint16_t* op_code)
 {
     if (system->debug_flag == 1) { printf("[OK] 0x%X: 8XY6\n", *op_code); }
     uint16_t x = (*op_code & 0x0F00) >> 8;
-    int16_t y = (*op_code & 0x00F0) >> 4;
     system->V[0xF] = system->V[x] & 0x1;
-    system->V[x] = (system->V[y] >> 1);
+    system->V[x] >>= 1;
 }
 
 // 8XY7: SUBN Vx, Vy

@@ -1,5 +1,5 @@
-#ifndef GFX_H_
-#define GFX_H_
+#ifndef _GFX_H_
+#define _GFX_H_
 
 #include <SDL2/SDL.h>
 

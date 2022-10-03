@@ -8,17 +8,19 @@
 int main(int argc, char** argv)
 {
     // Check argc to ensure arg was provided for rom filepath
-    if (argc != 2) {
-        printf("Usage: chip8 rom.ch8");
+    if (argc != 3) {
+        printf("Usage: chip8 [int: delay_timer] [string: rom.ch8]");
         return 1;
     }
+
+    int delay_timer = atoi(argv[1]);
 
     // Init chip8 system struct and initialize
     Chip8 chip8;
     init_chip8(&chip8, 1);
 
     // Load roam into chip8 system
-    load_rom(&chip8, argv[1]);
+    load_rom(&chip8, argv[2]);
 
     init_display("Chipper");
 
@@ -39,7 +41,7 @@ int main(int argc, char** argv)
         }
 
         // Timing
-        usleep(2);
+        usleep(delay_timer);
     }
 
     return 0;
