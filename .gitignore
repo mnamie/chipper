@@ -4,3 +4,4 @@ chipper
 *.c8
 *.rom
 .vscode/
+roms/
