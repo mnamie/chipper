@@ -7,7 +7,9 @@ Yet another CHIP8 emulator for Linux!
 1. Clone repository
 2. Install libsdl2-dev (`sudo apt-get install libsdl2-dev` on Ubuntu, for example)
 3. Run `make` in the top directory
-4. Start playing with `./chipper 1500 path_to_rom.ch8`
+4. Start playing with `./chipper 1500 0 path_to_rom.ch8`
+
+(`./chipper [int: delay_timer] [int: debug_flag] [str: path_to_rom]`)
 
 ### Current Status:
 
