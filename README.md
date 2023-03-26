@@ -1,6 +1,6 @@
 # Chipper
 
-Yet another CHIP8 emulator for Linux!
+Cross-platform CHIP8 emulator with SDL2!
 
 ### Instructions:
 
