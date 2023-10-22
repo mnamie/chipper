@@ -1,5 +1,6 @@
 #include "instruction_set.h"
 #include "chip8.h"
+#include "io.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -307,16 +308,14 @@ op_ld_vx_k(Chip8* system, uint16_t* op_code)
 {
     if (system->debug_flag == 1) { printf("[OK] 0x%X: FX0A\n", *op_code); }
     uint16_t x = (*op_code & 0x0F00) >> 8;
-    int flag = 0;
+
+    halt_and_await_key(system);
 
     for (int i = 0; i < 16; i++) {
-        if (system->V[i]) {
+        if (system->keypad[i]) {
             system->V[x] = i;
-            flag = 1;
+            break;
         }
-    }
-    if (flag == 0) {
-        return;
     }
 }
 

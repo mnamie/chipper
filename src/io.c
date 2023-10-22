@@ -6,6 +6,7 @@
 SDL_Window* screen;
 SDL_Renderer* renderer;
 SDL_Texture* texture;
+SDL_Event e;
 
 // SDL2 boiler plate for rendering
 void
@@ -256,4 +257,19 @@ process_input(Chip8* system, SDL_Event* e)
         }
     }
     return run;
+}
+
+void halt_and_await_key(Chip8 *system)
+{
+    while(1) {
+        process_input(system, &e);
+        for (int i = 0; i < 16; i++) {
+            if (system->keypad[i] == 1) {
+                goto end_loop;
+            }
+        }
+    }
+    
+    end_loop:
+    return;
 }

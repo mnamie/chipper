@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+extern SDL_Event e;
+
 int
 main(int argc, char** argv)
 {
@@ -27,8 +29,8 @@ main(int argc, char** argv)
     init_display("Chipper");
 
     // Emulation loop
-    uint run = 1;
-    SDL_Event e;
+    unsigned int run = 1;
+    
     while (run) {
         // Event polling from SDL
         run = process_input(&chip8, &e);

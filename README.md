@@ -6,10 +6,13 @@ Cross-platform CHIP8 emulator with SDL2!
 
 1. Clone repository
 2. Install libsdl2-dev (`sudo apt-get install libsdl2-dev` on Ubuntu, for example)
-3. Run `make` in the top directory
-4. Start playing with `./chipper 1500 0 path_to_rom.ch8`
+3. Run `cmake -S . -B build` in the top directory
+4. `cd build` and run `make`
+5. Start playing with `./src/chipper 1500 0 path_to_rom.ch8`
 
-(`./chipper [int: delay_timer] [int: debug_flag] [str: path_to_rom]`)
+Run command: `./chipper [int: delay_timer] [int: debug_flag] [str: path_to_rom]`
+
+Different games play best with different delay_timer values, if the game is playing too fast, increase the delay_timer. If too slow, decrease!
 
 ### Current Status:
 
@@ -19,6 +22,5 @@ Passing CHIP-8 test ROMs
 
 ### To-Do:
 
-1. There appears to be some error in one of the draw opcodes causing issues during certain segments of gameplay
-2. Sound
-3. Color pallette selection
+1. Sound
+2. Color pallette selection

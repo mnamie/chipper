@@ -314,7 +314,7 @@ emulate_cycle(Chip8* system)
 
         // ERROR
         default:
-            printf("Not implemented yet...");
+            printf("Opcode not implemented");
             system->pc += 2;
             break;
     }
