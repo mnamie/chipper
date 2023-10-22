@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 extern SDL_Event e;
+extern SDL_Window* screen;
 
 int
 main(int argc, char** argv)
@@ -30,7 +31,6 @@ main(int argc, char** argv)
 
     // Emulation loop
     unsigned int run = 1;
-    
     while (run) {
         // Event polling from SDL
         run = process_input(&chip8, &e);
@@ -47,6 +47,9 @@ main(int argc, char** argv)
         // Timing
         usleep(delay_timer);
     }
+
+    SDL_DestroyWindow(screen);
+    SDL_Quit();
 
     return 0;
 }

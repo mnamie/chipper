@@ -3,6 +3,9 @@
 
 #include <SDL2/SDL.h>
 
+#define PIXEL_ON_COLOR 0x00CE00FF
+#define PIXEL_OFF_COLOR 0x000000FF
+
 SDL_Window* screen;
 SDL_Renderer* renderer;
 SDL_Texture* texture;
@@ -38,7 +41,7 @@ buffer_draw(Chip8* system)
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
             uint8_t px = system->display[y][x];
-            system->buffer[(y * SCREEN_WIDTH) + x] = (0xFFFFFF00 * px) | 0x000000FF;
+            system->buffer[(y * SCREEN_WIDTH) + x] = px == 0 ? PIXEL_OFF_COLOR : PIXEL_ON_COLOR;
         }
     }
 }
@@ -54,10 +57,10 @@ draw(Chip8* system)
     system->draw_flag = 0;
 }
 
-uint
+unsigned int
 process_input(Chip8* system, SDL_Event* e)
 {
-    uint run = 1;
+    unsigned int run = 1;
     if (system->step_flag) {
         while (1) {
             if (SDL_PollEvent(e)) {
