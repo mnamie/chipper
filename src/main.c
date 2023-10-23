@@ -8,8 +8,7 @@
 extern SDL_Event e;
 extern SDL_Window* screen;
 
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
     // Check argc to ensure arg was provided for rom filepath
     if (argc != 4) {

@@ -12,8 +12,7 @@ SDL_Texture* texture;
 SDL_Event e;
 
 // SDL2 boiler plate for rendering
-void
-init_display(const char* name)
+void init_display(const char* name)
 {
     SDL_Init(SDL_INIT_VIDEO);
     screen = SDL_CreateWindow(
@@ -35,8 +34,7 @@ init_display(const char* name)
 }
 
 // Buffer frame before drawing
-void
-buffer_draw(Chip8* system)
+void buffer_draw(Chip8* system)
 {
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -47,8 +45,7 @@ buffer_draw(Chip8* system)
 }
 
 // Draw by leveraging buffer
-void
-draw(Chip8* system)
+void draw(Chip8* system)
 {
     SDL_UpdateTexture(texture, NULL, system->buffer, SCREEN_WIDTH * sizeof(uint32_t));
     SDL_RenderClear(renderer);
@@ -57,8 +54,7 @@ draw(Chip8* system)
     system->draw_flag = 0;
 }
 
-unsigned int
-process_input(Chip8* system, SDL_Event* e)
+unsigned int process_input(Chip8* system, SDL_Event* e)
 {
     unsigned int run = 1;
     if (system->step_flag) {

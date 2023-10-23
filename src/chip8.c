@@ -9,8 +9,7 @@
 #include <sys/stat.h>
 
 // Initialize Chip8 system data structure
-void 
-init_chip8(Chip8* system, int debug)
+void init_chip8(Chip8* system, int debug)
 {
     system->pc = 0x200;
     system->I = 0;
@@ -71,8 +70,7 @@ init_chip8(Chip8* system, int debug)
 
 }
 
-int
-load_rom(Chip8* system, char* filename)
+int load_rom(Chip8* system, char* filename)
 {
     FILE* rom = fopen(filename, "rb");
     if (rom == NULL) {
@@ -105,8 +103,7 @@ load_rom(Chip8* system, char* filename)
     free(rom_buffer);
 }
 
-void
-emulate_cycle(Chip8* system)
+void emulate_cycle(Chip8* system)
 {
     system->draw_flag = 0;
     system->sound_flag = 0;
