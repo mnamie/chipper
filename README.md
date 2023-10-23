@@ -24,3 +24,11 @@ Passing CHIP-8 test ROMs
 
 1. Sound
 2. Color pallette selection
+
+### Screenshots
+
+![Test Opcodes](./imgs/test_opcodes.png "Test Opcodes")
+
+![Space Invaders](./imgs/space_invaders.png "Space Invaders")
+
+![Blinky](./imgs/blinky.png "Blinky")
