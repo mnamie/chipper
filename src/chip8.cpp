@@ -1,5 +1,5 @@
-#include "chip8.h"
-#include "instruction_set.h"
+#include "chip8.hpp"
+#include "instruction_set.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>

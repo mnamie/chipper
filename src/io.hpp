@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "chip8.h"
+#include "chip8.hpp"
 
 #define WINDOW_HEIGHT 640
 #define WINDOW_WIDTH 1280

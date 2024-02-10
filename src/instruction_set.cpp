@@ -1,6 +1,6 @@
-#include "instruction_set.h"
-#include "chip8.h"
-#include "io.h"
+#include "instruction_set.hpp"
+#include "chip8.hpp"
+#include "io.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>

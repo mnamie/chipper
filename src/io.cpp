@@ -1,5 +1,5 @@
-#include "io.h"
-#include "chip8.h"
+#include "io.hpp"
+#include "chip8.hpp"
 
 #include <SDL2/SDL.h>
 
