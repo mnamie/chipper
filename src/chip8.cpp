@@ -8,35 +8,34 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-// Initialize Chip8 system data structure
-void init_chip8(Chip8* system, int debug)
+Chip8::Chip8(int debug)
 {
-    system->pc = 0x200;
-    system->I = 0;
-    system->sp = 0;
-    system->dt = 0;
-    system->st = 0;
-    system->draw_flag = 0;
-    system->sound_flag = 0;
-    system->debug_flag = debug; // Debug flag dictates console output
-    system->step_flag = 0;
+    this->pc = 0x200;
+    this->I = 0;
+    this->sp = 0;
+    this->dt = 0;
+    this->st = 0;
+    this->draw_flag = 0;
+    this->sound_flag = 0;
+    this->debug_flag = debug; // Debug flag dictates console output
+    this->step_flag = 0;
     
     for (int i = 0; i < SCREEN_HEIGHT; i++) {
         for (int j = 0; j < SCREEN_WIDTH; j++) {
-            system->display[i][j] = 0;
+            this->display[i][j] = 0;
         }
     }
 
-    for (int i = 0; i < sizeof(system->memory); i++) {
-        system->memory[i] = 0;
+    for (int i = 0; i < sizeof(this->memory); i++) {
+        this->memory[i] = 0;
     }
 
-    for (int i = 0; i < sizeof(system->V); i++) {
-        system->V[i] = 0;
+    for (int i = 0; i < sizeof(this->V); i++) {
+        this->V[i] = 0;
     }
 
-    for (int i = 0; i < sizeof(system->stack); i++) {
-        system->stack[i] = 0;
+    for (int i = 0; i < sizeof(this->stack); i++) {
+        this->stack[i] = 0;
     }
 
     uint8_t fontset[80] = {
@@ -60,17 +59,16 @@ void init_chip8(Chip8* system, int debug)
 
     // Copy fontset to memory
     for (int i = 0; i < 80; i++) {
-        system->memory[i] = fontset[i];
+        this->memory[i] = fontset[i];
     }
 
     // Initialize keypad
     for (int i = 0; i < KEYPAD_SIZE; i++) {
-        system->keypad[i] = 0;
+        this->keypad[i] = 0;
     }
-
 }
 
-int load_rom(Chip8* system, char* filename)
+void Chip8::loadRom(char* filename)
 {
     FILE* rom = fopen(filename, "rb");
     if (rom == NULL) {
@@ -95,7 +93,7 @@ int load_rom(Chip8* system, char* filename)
 
     // Copy rom_buffer to system memory
     for (int i = 0; i < rom_length; i++) {
-        system->memory[i+0x200] = rom_buffer[i];
+        this->memory[i+0x200] = rom_buffer[i];
     }
 
     // Cleanup
@@ -103,20 +101,20 @@ int load_rom(Chip8* system, char* filename)
     free(rom_buffer);
 }
 
-void emulate_cycle(Chip8* system)
+void Chip8::emulateCycle()
 {
-    system->draw_flag = 0;
-    system->sound_flag = 0;
+    this->draw_flag = 0;
+    this->sound_flag = 0;
 
-    uint16_t op_code = system->memory[system->pc] << 8 | system->memory[system->pc+1];
+    uint16_t op_code = this->memory[this->pc] << 8 | this->memory[this->pc+1];
     
-    if (system->debug_flag) {
-        printf("pc: 0x%X\n", system->pc);
+    if (this->debug_flag) {
+        printf("pc: 0x%X\n", this->pc);
         printf("opcode: 0x%X\n", op_code);
     }
 
     // Increment PC
-    system->pc += 2;
+    this->pc += 2;
     
     // Mask to get "first nibble"
     switch (op_code & 0xF000) {
@@ -124,12 +122,12 @@ void emulate_cycle(Chip8* system)
             switch (op_code & 0x00FF) {
                 // 00E0: Clear screen
                 case 0x00E0:
-                    op_cls(system, &op_code);
+                    op_cls(this, &op_code);
                     break;
 
                 // OOEE: Return
                 case 0x00EE:
-                    op_ret(system, &op_code);
+                    op_ret(this, &op_code);
                     break;
                 
                 default:
@@ -140,76 +138,76 @@ void emulate_cycle(Chip8* system)
         
         // 1NNN: Jump to NNN
         case 0x1000:
-            op_jp(system, &op_code);
+            op_jp(this, &op_code);
             break;
 
         // 2NNN: Call
         case 0x2000:
-            op_call(system, &op_code);
+            op_call(this, &op_code);
             break;
 
         // 3XNN: Skip next if x == NN
         case 0x3000:
-            op_se(system, &op_code);
+            op_se(this, &op_code);
             break;
 
         // 4XNN: Skip next if x != NN
         case 0x4000:
-            op_sne(system, &op_code);
+            op_sne(this, &op_code);
             break;
 
         // 5XY0: Skip next insturction if Vx == Vy
         case 0x5000:
-            op_se_compare(system, &op_code);
+            op_se_compare(this, &op_code);
             break;
 
         // 6XNN: Set Vx equal to NN
         case 0x6000:
-            op_ld_vx(system, &op_code);
+            op_ld_vx(this, &op_code);
             break;
 
         // 7XNN: Add NN to X
         case 0x7000:
-            op_add(system, &op_code);
+            op_add(this, &op_code);
             break;
 
         // 8000 Cases
         case 0x8000:
             switch (op_code & 0x000F) {
                 case 0x0000:
-                    op_ld_vx_vy(system, &op_code);
+                    op_ld_vx_vy(this, &op_code);
                     break;
 
                 case 0x0001:
-                    op_or_vx_vy(system, &op_code);
+                    op_or_vx_vy(this, &op_code);
                     break;
 
                 case 0x0002:
-                    op_and_vx_vy(system, &op_code);
+                    op_and_vx_vy(this, &op_code);
                     break;
 
                 case 0x0003:
-                    op_xor_vx_vy(system, &op_code);
+                    op_xor_vx_vy(this, &op_code);
                     break;
 
                 case 0x0004:
-                    op_add_vx_vy(system, &op_code);
+                    op_add_vx_vy(this, &op_code);
                     break;
 
                 case 0x0005:
-                    op_sub_vx_vy(system, &op_code);
+                    op_sub_vx_vy(this, &op_code);
                     break;
 
                 case 0x0006:
-                    op_shr_vx_vy(system, &op_code);
+                    op_shr_vx_vy(this, &op_code);
                     break;
 
                 case 0x0007:
-                    op_subn_vx_vy(system, &op_code);
+                    op_subn_vx_vy(this, &op_code);
                     break;
 
                 case 0x000E:
-                    op_shl_vx_vy(system, &op_code);
+                    op_shl_vx_vy(this, &op_code);
                     break;
 
                 default:
@@ -220,39 +218,39 @@ void emulate_cycle(Chip8* system)
 
         // 9XY0: Skip next instruction when Vx != Vy
         case 0x9000:
-            op_sne_vx_vy(system, &op_code);
+            op_sne_vx_vy(this, &op_code);
             break;
 
         // ANNN: Set index register I
         case 0xA000:
-            op_ld_i(system, &op_code);
+            op_ld_i(this, &op_code);
             break;
         
         // BNNN: Jump to location NNN + V0
         case 0xB000:
-            op_jp_v0(system, &op_code);
+            op_jp_v0(this, &op_code);
             break;
 
         // CXKK: Set Vx equal to a random byte AND KK
         case 0xC000:
-            op_rnd_vx(system, &op_code);
+            op_rnd_vx(this, &op_code);
             break;
 
         // DXYN: Display/draw
         case 0xD000:
-            op_drw(system, &op_code);
+            op_drw(this, &op_code);
             break;
 
         case 0xE000:
             switch (op_code & 0x00FF) {
                 // EX9E: Skip next insturction if key with the valu eof Vx is pressed
                 case 0x09E:
-                    op_sne_vx(system, &op_code);
+                    op_sne_vx(this, &op_code);
                     break;
 
                 // EXA1: Skip next instruction if key with the value of Vx is not pressed
                 case 0x00A1:
-                    op_sknp_vx(system, &op_code);
+                    op_sknp_vx(this, &op_code);
                     break;
             }
             break;
@@ -261,50 +259,50 @@ void emulate_cycle(Chip8* system)
             switch (op_code & 0x00FF) {
                 case 0x0007:
                     // FX07: LD Vx, DT - the value of DT is placed into Vx
-                    op_ld_vx_dt(system, &op_code);
+                    op_ld_vx_dt(this, &op_code);
                     break;
 
                 case 0x000A:
                     // FX0A: LD Vx, K - the value of K is placed into Vx
-                    op_ld_vx_k(system, &op_code);
+                    op_ld_vx_k(this, &op_code);
                     break;
 
                 case 0x0015:
                     // FX15: LD DT, Vx - set delay timer equal to Vx
-                    op_ld_dt_vx(system, &op_code);
+                    op_ld_dt_vx(this, &op_code);
                     break;
 
                 case 0x0018:
                     // FX18: LD ST, Vx - set sound timer = Vx
-                    op_ld_st_vx(system, &op_code);
+                    op_ld_st_vx(this, &op_code);
                     break;
                 
                 case 0x001E:
                     // FX1E - ADD I, Vx - set I = I + Vx
-                    op_add_i_vx(system, &op_code);
+                    op_add_i_vx(this, &op_code);
                     break;
 
                 case 0x0029:
                     // FX29: LD F, Vx - set I = location of sprite for digit Vx
-                    op_ld_f_vx(system, &op_code);
+                    op_ld_f_vx(this, &op_code);
                     break;
 
                 case 0x0033:
                     // FX33: LD B, Vx - store BCD representation of Vx in memory locations\
                     // I, I+1, I+2
-                    op_ld_b_vx(system, &op_code);
+                    op_ld_b_vx(this, &op_code);
                     break;
 
                 case 0x0055:
                     // FX55: LD [I], Vx - store registers V0 -> Vx in memory starting at
                     // location I
-                    op_ld_i_vx(system, &op_code);
+                    op_ld_i_vx(this, &op_code);
                     break;
 
                 case 0x0065:
                     // FX65: LD Vx, [I] - read registers V0 -> Vx from memory starting at
                     // location I
-                    op_ld_vx_i(system, &op_code);
+                    op_ld_vx_i(this, &op_code);
                     break;
             }
             break;
@@ -312,10 +310,10 @@ void emulate_cycle(Chip8* system)
         // ERROR
         default:
             printf("Opcode not implemented");
-            system->pc += 2;
+            this->pc += 2;
             break;
     }
 
-    if (system->dt > 0) system->dt--;
-    if (system->st > 0) system->st--;
+    if (this->dt > 0) this->dt--;
+    if (this->st > 0) this->st--;
 }

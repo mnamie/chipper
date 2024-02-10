@@ -2,7 +2,7 @@
 #include "io.h"
 
 #include <SDL2/SDL.h>
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 
 extern SDL_Event e;
@@ -20,11 +20,10 @@ int main(int argc, char** argv)
     int debug_flag = atoi(argv[2]);
 
     // Init chip8 system struct and initialize
-    Chip8 chip8;
-    init_chip8(&chip8, debug_flag);
+    Chip8 chip8 = Chip8(debug_flag);
 
     // Load roam into chip8 system
-    load_rom(&chip8, argv[3]);
+    chip8.loadRom(argv[3]);
 
     init_display("Chipper");
 
@@ -35,7 +34,7 @@ int main(int argc, char** argv)
         run = process_input(&chip8, &e);
         
         // Fetch, decode, execute cycle
-        emulate_cycle(&chip8);
+        chip8.emulateCycle();
         
         // Draw if flag is set
         if (chip8.draw_flag) {
