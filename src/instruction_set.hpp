@@ -1,7 +1,8 @@
-#ifndef _INSTRUCTION_SET_H_
-#define _INSTRUCTION_SET_H_
+#ifndef _INSTRUCTION_SET_HPP_
+#define _INSTRUCTION_SET_HPP_
 
 #include "chip8.hpp"
+#include "io.hpp"
 
 #include <stdint.h>
 

@@ -1,5 +1,5 @@
-#ifndef _GFX_H_
-#define _GFX_H_
+#ifndef _GFX_HPP_
+#define _GFX_HPP_
 
 #include <SDL2/SDL.h>
 
@@ -8,10 +8,21 @@
 #define WINDOW_HEIGHT 640
 #define WINDOW_WIDTH 1280
 
-void init_display(const char *name);
-void buffer_draw(Chip8 *system);
-void draw(Chip8 *system);
-unsigned int process_input(Chip8 *system, SDL_Event *e);
-void halt_and_await_key(Chip8 *system);
+class Chip8;
+class Display
+{
+public:
+    SDL_Window* screen;
+    SDL_Renderer* renderer;
+    SDL_Texture* texture;
+    SDL_Event e;
+
+    Display(const char *);
+    void bufferDraw(Chip8*);
+    void draw(Chip8*);
+    bool processInput(Chip8*);
+    void haltAndAwaitKey(Chip8*);
+    void destroy();
+};
 
 #endif

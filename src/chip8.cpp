@@ -1,43 +1,25 @@
 #include "chip8.hpp"
 #include "instruction_set.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <errno.h>
-#include <sys/stat.h>
+#include <fstream>
+#include <iostream>
 
-Chip8::Chip8(int debug)
+Chip8::Chip8(int debug, Display* io)
+    : pc(0x200),
+    I(0),
+    sp(0),
+    dt(0),
+    st(0),
+    draw_flag(0),
+    sound_flag(0),
+    debug_flag(debug),
+    step_flag(0),
+    display(),
+    memory(),
+    V(),
+    stack(),
+    io(io)
 {
-    this->pc = 0x200;
-    this->I = 0;
-    this->sp = 0;
-    this->dt = 0;
-    this->st = 0;
-    this->draw_flag = 0;
-    this->sound_flag = 0;
-    this->debug_flag = debug; // Debug flag dictates console output
-    this->step_flag = 0;
-    
-    for (int i = 0; i < SCREEN_HEIGHT; i++) {
-        for (int j = 0; j < SCREEN_WIDTH; j++) {
-            this->display[i][j] = 0;
-        }
-    }
-
-    for (int i = 0; i < sizeof(this->memory); i++) {
-        this->memory[i] = 0;
-    }
-
-    for (int i = 0; i < sizeof(this->V); i++) {
-        this->V[i] = 0;
-    }
-
-    for (int i = 0; i < sizeof(this->stack); i++) {
-        this->stack[i] = 0;
-    }
-
     uint8_t fontset[80] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0,  // 0
         0x20, 0x60, 0x20, 0x20, 0x70,  // 1
@@ -70,35 +52,24 @@ Chip8::Chip8(int debug)
 
 void Chip8::loadRom(char* filename)
 {
-    FILE* rom = fopen(filename, "rb");
-    if (rom == NULL) {
-        printf("ERROR: ROM file not loaded");
-        exit(EXIT_FAILURE);
+    std::streampos size;
+    char* memblock;
+
+    std::ifstream rom (filename, std::ios::in | std::ios::binary | std::ios::ate);
+    if (rom.is_open()) {
+        size = rom.tellg();
+        memblock = new char[size];
+        rom.seekg(0, std::ios::beg);
+        rom.read(memblock, size);
+        rom.close();
     }
 
-    // Get length of rom
-    fseek(rom, 0, SEEK_END);
-    long rom_length = ftell(rom);
-    rewind(rom);
-
-    // Initilize rom buffer
-    uint8_t* rom_buffer = (uint8_t*)malloc(sizeof(uint8_t) * rom_length);
-    if (rom_buffer == NULL) {
-        printf("ERROR: Not enough memory\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Read rom into rom_buffer
-    fread(rom_buffer, sizeof(uint8_t), rom_length, rom);
-
-    // Copy rom_buffer to system memory
-    for (int i = 0; i < rom_length; i++) {
-        this->memory[i+0x200] = rom_buffer[i];
+    for (int i = 0; i < size; i++) {
+        this->memory[i+0x200] = memblock[i];
     }
 
     // Cleanup
-    fclose(rom);
-    free(rom_buffer);
+    delete[] memblock;
 }
 
 void Chip8::emulateCycle()

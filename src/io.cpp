@@ -6,16 +6,12 @@
 #define PIXEL_ON_COLOR 0x00CE00FF
 #define PIXEL_OFF_COLOR 0x000000FF
 
-SDL_Window* screen;
-SDL_Renderer* renderer;
-SDL_Texture* texture;
-SDL_Event e;
 
 // SDL2 boiler plate for rendering
-void init_display(const char* name)
+Display::Display(const char* name)
 {
     SDL_Init(SDL_INIT_VIDEO);
-    screen = SDL_CreateWindow(
+    this->screen = SDL_CreateWindow(
         name, 
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED, 
@@ -23,8 +19,8 @@ void init_display(const char* name)
         WINDOW_HEIGHT, 
         0
     );
-    renderer = SDL_CreateRenderer(screen, -1, 0);
-    texture = SDL_CreateTexture(
+    this->renderer = SDL_CreateRenderer(screen, -1, 0);
+    this->texture = SDL_CreateTexture(
         renderer, 
         SDL_PIXELFORMAT_RGBA8888, 
         SDL_TEXTUREACCESS_TARGET, 
@@ -34,7 +30,7 @@ void init_display(const char* name)
 }
 
 // Buffer frame before drawing
-void buffer_draw(Chip8* system)
+void Display::bufferDraw(Chip8* system)
 {
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -45,24 +41,24 @@ void buffer_draw(Chip8* system)
 }
 
 // Draw by leveraging buffer
-void draw(Chip8* system)
+void Display::draw(Chip8* system)
 {
-    SDL_UpdateTexture(texture, NULL, system->buffer, SCREEN_WIDTH * sizeof(uint32_t));
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
+    SDL_UpdateTexture(this->texture, NULL, system->buffer, SCREEN_WIDTH * sizeof(uint32_t));
+    SDL_RenderClear(this->renderer);
+    SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
+    SDL_RenderPresent(this->renderer);
     system->draw_flag = 0;
 }
 
-unsigned int process_input(Chip8* system, SDL_Event* e)
+bool Display::processInput(Chip8* system)
 {
-    unsigned int run = 1;
+    bool run = true;
     if (system->step_flag) {
         while (1) {
-            if (SDL_PollEvent(e)) {
-                if (e->type == SDL_QUIT) return 0;
-                if (e->type == SDL_KEYDOWN) {
-                    if (e->key.keysym.sym == SDLK_n) {
+            if (SDL_PollEvent(&this->e)) {
+                if (this->e.type == SDL_QUIT) return 0;
+                if (this->e.type == SDL_KEYDOWN) {
+                    if (this->e.key.keysym.sym == SDLK_n) {
                         system->step_flag = 0;
                         return 1;
                     }
@@ -72,19 +68,31 @@ unsigned int process_input(Chip8* system, SDL_Event* e)
         }
     }
 
-    if (SDL_PollEvent(e)) {
-        switch (e->type) {
+    if (SDL_PollEvent(&this->e)) {
+        switch (this->e.type) {
             // Poll for quit
             case SDL_QUIT:
-                run = 0;
+                run = false;
                 break;
+
+            // Poll for window 'X' interaction
+            case SDL_WINDOWEVENT:
+                switch(this->e.window.event) {
+                    case SDL_WINDOWEVENT_CLOSE:
+                        this->destroy();
+                        exit(0);
+
+                    default:
+                        break;
+                }
 
             // Poll keydown
             case SDL_KEYDOWN:
-                switch (e->key.keysym.sym) {
+                switch (this->e.key.keysym.sym) {
                     case SDLK_x:
                         if (system->debug_flag == 1) { printf("[KEYDOWN] x\n"); }
                         system->keypad[0] = 1;
+                        run = false;
                         break;
                     
                     case SDLK_1:
@@ -166,11 +174,11 @@ unsigned int process_input(Chip8* system, SDL_Event* e)
             
             // Poll keyup
             case SDL_KEYUP:
-                switch (e->key.keysym.sym) {
+                switch (this->e.key.keysym.sym) {
                     case SDLK_x:
                         if (system->debug_flag == 1) { printf("[KEYUP] x\n"); }
                         system->keypad[0] = 0;
-                        run = 0;
+                        run = false;
                         break;
                     
                     case SDLK_1:
@@ -258,10 +266,10 @@ unsigned int process_input(Chip8* system, SDL_Event* e)
     return run;
 }
 
-void halt_and_await_key(Chip8 *system)
+void Display::haltAndAwaitKey(Chip8 *system)
 {
-    while(1) {
-        process_input(system, &e);
+    while(true) {
+        this->processInput(system);
         for (int i = 0; i < 16; i++) {
             if (system->keypad[i] == 1) {
                 goto end_loop;
@@ -271,4 +279,12 @@ void halt_and_await_key(Chip8 *system)
     
     end_loop:
     return;
+}
+
+void Display::destroy()
+{
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyTexture(texture);
+    SDL_DestroyWindow(screen);
+    SDL_Quit();
 }

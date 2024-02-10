@@ -1,11 +1,15 @@
-#ifndef _CHIP_H_
-#define _CHIP_H_
+#ifndef _CHIP_HPP_
+#define _CHIP_HPP_
+
+#include "io.hpp"
 
 #include <cstdint>
 
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
 #define KEYPAD_SIZE 16
+
+class Display;
 
 class Chip8 
 {
@@ -26,7 +30,9 @@ public:
     uint8_t debug_flag;
     uint8_t step_flag;
 
-    Chip8(int);
+    Display* io;
+
+    Chip8(int, Display*);
     void loadRom(char*);
     void emulateCycle();
 };

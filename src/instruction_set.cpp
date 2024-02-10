@@ -282,7 +282,7 @@ void op_ld_vx_k(Chip8* system, uint16_t* op_code)
     if (system->debug_flag == 1) { printf("[OK] 0x%X: FX0A\n", *op_code); }
     uint16_t x = (*op_code & 0x0F00) >> 8;
 
-    halt_and_await_key(system);
+    system->io->haltAndAwaitKey(system);
 
     for (int i = 0; i < 16; i++) {
         if (system->keypad[i]) {
