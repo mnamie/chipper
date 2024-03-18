@@ -1,7 +1,7 @@
 #ifndef _GFX_HPP_
 #define _GFX_HPP_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "chip8.hpp"
 

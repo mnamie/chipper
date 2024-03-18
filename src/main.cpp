@@ -1,9 +1,14 @@
 #include "chip8.hpp"
 #include "io.hpp"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <cstdio>
+
+#ifdef IS_WINDOWS
+#include <windows.h>
+#elif IS_LINUX
 #include <unistd.h>
+#endif
 
 int main(int argc, char** argv)
 {
@@ -41,7 +46,11 @@ int main(int argc, char** argv)
         }
 
         // Timing
+#ifdef IS_WINDOWS
+        Sleep(delay_timer);
+#elif IS_LINUX
         usleep(delay_timer);
+#endif
     }
 
     io.destroy();

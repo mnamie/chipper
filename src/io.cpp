@@ -1,7 +1,8 @@
 #include "io.hpp"
 #include "chip8.hpp"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
+#include <cstdio>
 
 #define PIXEL_ON_COLOR 0x00CE00FF
 #define PIXEL_OFF_COLOR 0x000000FF

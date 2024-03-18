@@ -1,4 +1,5 @@
-build/*
-chipper
+build/
+out/
 .vscode/
 .cache/
+.vs/
