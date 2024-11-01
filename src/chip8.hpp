@@ -29,10 +29,11 @@ public:
     uint8_t sound_flag;
     uint8_t debug_flag;
     uint8_t step_flag;
+    int delay_timer;
 
     Display* io;
 
-    Chip8(int, Display*);
+    Chip8(int, int, Display*);
     void loadRom(char*);
     void emulateCycle();
 };

@@ -170,6 +170,16 @@ bool Display::processInput(Chip8* system)
                         if (system->debug_flag == 1) { printf("[KEYDOWN] 7\n"); }
                         system->keypad[15] = 1;
                         break;
+
+                    case SDLK_EQUALS:
+                        if (system->delay_timer > 0) system->delay_timer -= 1;
+                        if (system->debug_flag == 1) { printf("[KEYDOWN] Cycle delay: %d\n", system->delay_timer); }
+                        break;
+
+                    case SDLK_MINUS:
+                        system->delay_timer += 1;
+                        if (system->debug_flag == 1) { printf("[KEYDOWN] Cycle delay: %d\n", system->delay_timer); }
+                        break;
                 }
                 break;
             
