@@ -9,9 +9,9 @@ Cross-platform CHIP8 emulator with SDL2!
 	- To install on Windows, download the latest release of SDL2, place in `C:\Program Files\` and add to system PATH
 3. Run `cmake -S . -B build` in the top directory
 4. Run `make -C build/` in the top director to build
-5. Start playing with `.build/src/chipper 1500 0 path_to_rom.ch8`
+5. Start playing with `.build/src/chipper 0 path/to/rom.ch8`
 
-Run command: `./chipper [int: delay_timer] [int: debug_flag] [str: path_to_rom]`
+Run command: `./chipper [int: debug_flag] [str: path/to/rom.ch8]`
 
 Different games play best with different delay_timer values, if the game is playing too fast, increase the delay_timer. If too slow, decrease!
 
