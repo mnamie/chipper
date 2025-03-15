@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-Chip8::Chip8(bool debug, uint16_t delay_timer, Display* io)
+Chip8::Chip8(bool debug, uint16_t delayTimer, Display* io)
     : pc(0x200),
     I(0),
     sp(0),
@@ -19,7 +19,7 @@ Chip8::Chip8(bool debug, uint16_t delay_timer, Display* io)
     V(),
     stack(),
     io(io),
-    delayTimer(delay_timer)
+    delayTimer(delayTimer)
 {
     uint8_t fontset[80] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0,  // 0
