@@ -7,9 +7,11 @@ Cross-platform CHIP8 emulator with SDL2!
 1. Clone repository
 2. Install libsdl2-dev (`sudo apt-get install libsdl2-dev` on Ubuntu, for example)
 	- To install on Windows, download the latest release of SDL2, place in `C:\Program Files\` and add to system PATH
-3. Run `cmake -S . -B build` in the top directory
-4. Run `make -C build/` in the top director to build
-5. Start playing with `.build/src/chipper 0 path/to/rom.ch8`
+3. `mkdir build`
+4. `cd build`
+5. `cmake ..`
+6. `cmake --build .`
+7. Start playing with `.build/src/chipper 0 path/to/rom.ch8`
 
 Run command: `./chipper [int: debug_flag] [str: path/to/rom.ch8]`
 
