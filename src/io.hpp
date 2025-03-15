@@ -18,11 +18,11 @@ public:
     SDL_Event e;
 
     Display(const char *);
+    ~Display(void);
     void bufferDraw(Chip8*);
     void draw(Chip8*);
     bool processInput(Chip8*);
     void haltAndAwaitKey(Chip8*);
-    void destroy();
 };
 
 #endif

@@ -18,19 +18,20 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    int debug_flag = atoi(argv[1]);
+    bool debugFlag = false;
+    if (atoi(argv[1])) debugFlag = true;
 
     // Init display for IO
-    Display io("Chipper");
+    Display io{"Chipper"};
 
     // Init chip8 system struct and initialize
-    Chip8 chip8(debug_flag, 20, &io);
+    Chip8 chip8{debugFlag, 20, &io};
 
     // Load roam into chip8 system
     chip8.loadRom(argv[2]);
 
     // Emulation loop
-    bool run = 1;
+    bool run = true;
     while (run) {
         // Event polling from SDL
         run = io.processInput(&chip8);
@@ -39,20 +40,18 @@ int main(int argc, char** argv)
         chip8.emulateCycle();
         
         // Draw if flag is set
-        if (chip8.draw_flag) {
+        if (chip8.drawFlag) {
             io.bufferDraw(&chip8);
             io.draw(&chip8);
         }
 
         // Timing
 #ifdef IS_WINDOWS
-        Sleep(chip8.delay_timer);
+        Sleep(chip8.delayTimer);
 #elif IS_LINUX
         usleep(chip8.delay_timer);
 #endif
     }
-
-    io.destroy();
 
     return 0;
 }

@@ -4,22 +4,22 @@
 #include <fstream>
 #include <iostream>
 
-Chip8::Chip8(int debug, int delay_timer, Display* io)
+Chip8::Chip8(bool debug, uint16_t delay_timer, Display* io)
     : pc(0x200),
     I(0),
     sp(0),
     dt(0),
     st(0),
-    draw_flag(0),
-    sound_flag(0),
-    debug_flag(debug),
-    step_flag(0),
+    drawFlag(0),
+    soundFlag(0),
+    debugFlag(debug),
+    stepFlag(0),
     display(),
     memory(),
     V(),
     stack(),
     io(io),
-    delay_timer(delay_timer)
+    delayTimer(delay_timer)
 {
     uint8_t fontset[80] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0,  // 0
@@ -73,208 +73,208 @@ void Chip8::loadRom(char* filename)
     delete[] memblock;
 }
 
-void Chip8::emulateCycle()
+void Chip8::emulateCycle(void)
 {
-    this->draw_flag = 0;
-    this->sound_flag = 0;
+    this->drawFlag = 0;
+    this->soundFlag = 0;
 
-    uint16_t op_code = this->memory[this->pc] << 8 | this->memory[this->pc+1];
+    uint16_t opCode = this->memory[this->pc] << 8 | this->memory[this->pc+1];
     
-    if (this->debug_flag) {
+    if (this->debugFlag) {
         printf("pc: 0x%X\n", this->pc);
-        printf("opcode: 0x%X\n", op_code);
+        printf("opcode: 0x%X\n", opCode);
     }
 
     // Increment PC
     this->pc += 2;
     
     // Mask to get "first nibble"
-    switch (op_code & 0xF000) {
+    switch (opCode & 0xF000) {
         case 0x0000:
-            switch (op_code & 0x00FF) {
+            switch (opCode & 0x00FF) {
                 // 00E0: Clear screen
                 case 0x00E0:
-                    op_cls(this, &op_code);
+                    op_cls(this, &opCode);
                     break;
 
                 // OOEE: Return
                 case 0x00EE:
-                    op_ret(this, &op_code);
+                    op_ret(this, &opCode);
                     break;
                 
                 default:
-                    printf("[FAILED] Unknown opcode: 0x%X\n", op_code);
+                    printf("[FAILED] Unknown opcode: 0x%X\n", opCode);
                     break;
             }
             break;
         
         // 1NNN: Jump to NNN
         case 0x1000:
-            op_jp(this, &op_code);
+            op_jp(this, &opCode);
             break;
 
         // 2NNN: Call
         case 0x2000:
-            op_call(this, &op_code);
+            op_call(this, &opCode);
             break;
 
         // 3XNN: Skip next if x == NN
         case 0x3000:
-            op_se(this, &op_code);
+            op_se(this, &opCode);
             break;
 
         // 4XNN: Skip next if x != NN
         case 0x4000:
-            op_sne(this, &op_code);
+            op_sne(this, &opCode);
             break;
 
         // 5XY0: Skip next insturction if Vx == Vy
         case 0x5000:
-            op_se_compare(this, &op_code);
+            op_se_compare(this, &opCode);
             break;
 
         // 6XNN: Set Vx equal to NN
         case 0x6000:
-            op_ld_vx(this, &op_code);
+            op_ld_vx(this, &opCode);
             break;
 
         // 7XNN: Add NN to X
         case 0x7000:
-            op_add(this, &op_code);
+            op_add(this, &opCode);
             break;
 
         // 8000 Cases
         case 0x8000:
-            switch (op_code & 0x000F) {
+            switch (opCode & 0x000F) {
                 case 0x0000:
-                    op_ld_vx_vy(this, &op_code);
+                    op_ld_vx_vy(this, &opCode);
                     break;
 
                 case 0x0001:
-                    op_or_vx_vy(this, &op_code);
+                    op_or_vx_vy(this, &opCode);
                     break;
 
                 case 0x0002:
-                    op_and_vx_vy(this, &op_code);
+                    op_and_vx_vy(this, &opCode);
                     break;
 
                 case 0x0003:
-                    op_xor_vx_vy(this, &op_code);
+                    op_xor_vx_vy(this, &opCode);
                     break;
 
                 case 0x0004:
-                    op_add_vx_vy(this, &op_code);
+                    op_add_vx_vy(this, &opCode);
                     break;
 
                 case 0x0005:
-                    op_sub_vx_vy(this, &op_code);
+                    op_sub_vx_vy(this, &opCode);
                     break;
 
                 case 0x0006:
-                    op_shr_vx_vy(this, &op_code);
+                    op_shr_vx_vy(this, &opCode);
                     break;
 
                 case 0x0007:
-                    op_subn_vx_vy(this, &op_code);
+                    op_subn_vx_vy(this, &opCode);
                     break;
 
                 case 0x000E:
-                    op_shl_vx_vy(this, &op_code);
+                    op_shl_vx_vy(this, &opCode);
                     break;
 
                 default:
-                    printf("[FAILED] Unknown op code: 0x%X\n", op_code);
+                    printf("[FAILED] Unknown op code: 0x%X\n", opCode);
                     break;
             }
             break;
 
         // 9XY0: Skip next instruction when Vx != Vy
         case 0x9000:
-            op_sne_vx_vy(this, &op_code);
+            op_sne_vx_vy(this, &opCode);
             break;
 
         // ANNN: Set index register I
         case 0xA000:
-            op_ld_i(this, &op_code);
+            op_ld_i(this, &opCode);
             break;
         
         // BNNN: Jump to location NNN + V0
         case 0xB000:
-            op_jp_v0(this, &op_code);
+            op_jp_v0(this, &opCode);
             break;
 
         // CXKK: Set Vx equal to a random byte AND KK
         case 0xC000:
-            op_rnd_vx(this, &op_code);
+            op_rnd_vx(this, &opCode);
             break;
 
         // DXYN: Display/draw
         case 0xD000:
-            op_drw(this, &op_code);
+            op_drw(this, &opCode);
             break;
 
         case 0xE000:
-            switch (op_code & 0x00FF) {
+            switch (opCode & 0x00FF) {
                 // EX9E: Skip next insturction if key with the valu eof Vx is pressed
                 case 0x09E:
-                    op_sne_vx(this, &op_code);
+                    op_sne_vx(this, &opCode);
                     break;
 
                 // EXA1: Skip next instruction if key with the value of Vx is not pressed
                 case 0x00A1:
-                    op_sknp_vx(this, &op_code);
+                    op_sknp_vx(this, &opCode);
                     break;
             }
             break;
 
         case 0xF000:
-            switch (op_code & 0x00FF) {
+            switch (opCode & 0x00FF) {
                 case 0x0007:
                     // FX07: LD Vx, DT - the value of DT is placed into Vx
-                    op_ld_vx_dt(this, &op_code);
+                    op_ld_vx_dt(this, &opCode);
                     break;
 
                 case 0x000A:
                     // FX0A: LD Vx, K - the value of K is placed into Vx
-                    op_ld_vx_k(this, &op_code);
+                    op_ld_vx_k(this, &opCode);
                     break;
 
                 case 0x0015:
                     // FX15: LD DT, Vx - set delay timer equal to Vx
-                    op_ld_dt_vx(this, &op_code);
+                    op_ld_dt_vx(this, &opCode);
                     break;
 
                 case 0x0018:
                     // FX18: LD ST, Vx - set sound timer = Vx
-                    op_ld_st_vx(this, &op_code);
+                    op_ld_st_vx(this, &opCode);
                     break;
                 
                 case 0x001E:
                     // FX1E - ADD I, Vx - set I = I + Vx
-                    op_add_i_vx(this, &op_code);
+                    op_add_i_vx(this, &opCode);
                     break;
 
                 case 0x0029:
                     // FX29: LD F, Vx - set I = location of sprite for digit Vx
-                    op_ld_f_vx(this, &op_code);
+                    op_ld_f_vx(this, &opCode);
                     break;
 
                 case 0x0033:
                     // FX33: LD B, Vx - store BCD representation of Vx in memory locations\
                     // I, I+1, I+2
-                    op_ld_b_vx(this, &op_code);
+                    op_ld_b_vx(this, &opCode);
                     break;
 
                 case 0x0055:
                     // FX55: LD [I], Vx - store registers V0 -> Vx in memory starting at
                     // location I
-                    op_ld_i_vx(this, &op_code);
+                    op_ld_i_vx(this, &opCode);
                     break;
 
                 case 0x0065:
                     // FX65: LD Vx, [I] - read registers V0 -> Vx from memory starting at
                     // location I
-                    op_ld_vx_i(this, &op_code);
+                    op_ld_vx_i(this, &opCode);
                     break;
             }
             break;

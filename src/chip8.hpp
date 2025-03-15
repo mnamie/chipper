@@ -25,17 +25,17 @@ public:
     uint32_t buffer[SCREEN_HEIGHT * SCREEN_WIDTH];
     uint8_t dt;
     uint8_t st;
-    uint8_t draw_flag;
-    uint8_t sound_flag;
-    uint8_t debug_flag;
-    uint8_t step_flag;
-    int delay_timer;
+    bool drawFlag;
+    bool soundFlag;
+    bool debugFlag;
+    bool stepFlag;
+    uint16_t delayTimer;
 
     Display* io;
 
-    Chip8(int, int, Display*);
+    Chip8(bool, uint16_t, Display*);
     void loadRom(char*);
-    void emulateCycle();
+    void emulateCycle(void);
 };
 
 #endif

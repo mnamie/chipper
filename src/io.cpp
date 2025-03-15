@@ -30,6 +30,15 @@ Display::Display(const char* name)
     );
 }
 
+// Destructor
+Display::~Display(void)
+{
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyTexture(texture);
+    SDL_DestroyWindow(screen);
+    SDL_Quit();
+}
+
 // Buffer frame before drawing
 void Display::bufferDraw(Chip8* system)
 {
@@ -48,19 +57,19 @@ void Display::draw(Chip8* system)
     SDL_RenderClear(this->renderer);
     SDL_RenderCopy(this->renderer, this->texture, NULL, NULL);
     SDL_RenderPresent(this->renderer);
-    system->draw_flag = 0;
+    system->drawFlag = 0;
 }
 
 bool Display::processInput(Chip8* system)
 {
     bool run = true;
-    if (system->step_flag) {
+    if (system->stepFlag) {
         while (1) {
             if (SDL_PollEvent(&this->e)) {
                 if (this->e.type == SDL_QUIT) return 0;
                 if (this->e.type == SDL_KEYDOWN) {
                     if (this->e.key.keysym.sym == SDLK_n) {
-                        system->step_flag = 0;
+                        system->stepFlag = 0;
                         return 1;
                     }
                     return 1;
@@ -80,7 +89,6 @@ bool Display::processInput(Chip8* system)
             case SDL_WINDOWEVENT:
                 switch(this->e.window.event) {
                     case SDL_WINDOWEVENT_CLOSE:
-                        this->destroy();
                         exit(0);
 
                     default:
@@ -91,94 +99,94 @@ bool Display::processInput(Chip8* system)
             case SDL_KEYDOWN:
                 switch (this->e.key.keysym.sym) {
                     case SDLK_x:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] x\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] x\n"); }
                         system->keypad[0] = 1;
                         run = false;
                         break;
                     
                     case SDLK_1:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] 1\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] 1\n"); }
                         system->keypad[1] = 1;
                         break;
 
                     case SDLK_2:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] 2\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] 2\n"); }
                         system->keypad[2] = 1;
                         break;
 
                     case SDLK_3:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] 3\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] 3\n"); }
                         system->keypad[3] = 1;
                         break;
 
                     case SDLK_q:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] q\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] q\n"); }
                         system->keypad[4] = 1;
                         break;
 
                     case SDLK_w:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] w\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] w\n"); }
                         system->keypad[5] = 1;
                         break;
 
                     case SDLK_e:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] e\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] e\n"); }
                         system->keypad[6] = 1;
                         break;
 
                     case SDLK_a:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] a\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] a\n"); }
                         system->keypad[7] = 1;
                         break;
 
                     case SDLK_s:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] s\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] s\n"); }
                         system->keypad[8] = 1;
                         break;
 
                     case SDLK_d:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] d\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] d\n"); }
                         system->keypad[9] = 1;
                         break;
 
                     case SDLK_z:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] z\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] z\n"); }
                         system->keypad[10] = 1;
                         break;
 
                     case SDLK_c:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] c\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] c\n"); }
                         system->keypad[11] = 1;
                         break;
 
                     case SDLK_4:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] 4\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] 4\n"); }
                         system->keypad[12] = 1;
                         break;
 
                     case SDLK_r:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] 5\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] 5\n"); }
                         system->keypad[13] = 1;
                         break;
 
                     case SDLK_f:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] 6\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] 6\n"); }
                         system->keypad[14] = 1;
                         break;
 
                     case SDLK_v:
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] 7\n"); }
+                        if (system->debugFlag) { printf("[KEYDOWN] 7\n"); }
                         system->keypad[15] = 1;
                         break;
 
                     case SDLK_EQUALS:
-                        if (system->delay_timer > 0) system->delay_timer -= 1;
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] Cycle delay: %d\n", system->delay_timer); }
+                        if (system->delayTimer > 0) system->delayTimer -= 1;
+                        if (system->debugFlag) { printf("[KEYDOWN] Cycle delay: %d\n", system->delayTimer); }
                         break;
 
                     case SDLK_MINUS:
-                        system->delay_timer += 1;
-                        if (system->debug_flag == 1) { printf("[KEYDOWN] Cycle delay: %d\n", system->delay_timer); }
+                        system->delayTimer += 1;
+                        if (system->debugFlag) { printf("[KEYDOWN] Cycle delay: %d\n", system->delayTimer); }
                         break;
                 }
                 break;
@@ -187,88 +195,88 @@ bool Display::processInput(Chip8* system)
             case SDL_KEYUP:
                 switch (this->e.key.keysym.sym) {
                     case SDLK_x:
-                        if (system->debug_flag == 1) { printf("[KEYUP] x\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] x\n"); }
                         system->keypad[0] = 0;
                         run = false;
                         break;
                     
                     case SDLK_1:
-                        if (system->debug_flag == 1) { printf("[KEYUP] 1\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] 1\n"); }
                         system->keypad[1] = 0;
                         break;
 
                     case SDLK_2:
-                        if (system->debug_flag == 1) { printf("[KEYUP] 2\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] 2\n"); }
                         system->keypad[2] = 0;
                         break;
 
                     case SDLK_3:
-                        if (system->debug_flag == 1) { printf("[KEYUP] 3\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] 3\n"); }
                         system->keypad[3] = 0;
                         break;
 
                     case SDLK_q:
-                        if (system->debug_flag == 1) { printf("[KEYUP] 4\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] 4\n"); }
                         system->keypad[4] = 0;
                         break;
 
                     case SDLK_w:
-                        if (system->debug_flag == 1) { printf("[KEYUP] 5\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] 5\n"); }
                         system->keypad[5] = 0;
                         break;
 
                     case SDLK_e:
-                        if (system->debug_flag == 1) { printf("[KEYUP] e\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] e\n"); }
                         system->keypad[6] = 0;
                         break;
 
                     case SDLK_a:
-                        if (system->debug_flag == 1) { printf("[KEYUP] a\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] a\n"); }
                         system->keypad[7] = 0;
                         break;
 
                     case SDLK_s:
-                        if (system->debug_flag == 1) { printf("[KEYUP] s\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] s\n"); }
                         system->keypad[8] = 0;
                         break;
 
                     case SDLK_d:
-                        if (system->debug_flag == 1) { printf("[KEYUP] d\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] d\n"); }
                         system->keypad[9] = 0;
                         break;
 
                     case SDLK_z:
-                        if (system->debug_flag == 1) { printf("[KEYUP] z\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] z\n"); }
                         system->keypad[10] = 0;
                         break;
 
                     case SDLK_c:
-                        if (system->debug_flag == 1) { printf("[KEYUP] c\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] c\n"); }
                         system->keypad[11] = 0;
                         break;
 
                     case SDLK_4:
-                        if (system->debug_flag == 1) { printf("[KEYUP] 4\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] 4\n"); }
                         system->keypad[12] = 0;
                         break;
 
                     case SDLK_r:
-                        if (system->debug_flag == 1) { printf("[KEYUP] r\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] r\n"); }
                         system->keypad[13] = 0;
                         break;
 
                     case SDLK_f:
-                        if (system->debug_flag == 1) { printf("[KEYUP] f\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] f\n"); }
                         system->keypad[14] = 0;
                         break;
 
                     case SDLK_v:
-                        if (system->debug_flag == 1) { printf("[KEYUP] v\n"); }
+                        if (system->debugFlag) { printf("[KEYUP] v\n"); }
                         system->keypad[15] = 0;
                         break;
 
                     case SDLK_m:
-                        system->step_flag = 1;
+                        system->stepFlag = 1;
                         break;
                 }
                 break;
@@ -282,7 +290,7 @@ void Display::haltAndAwaitKey(Chip8 *system)
     while(true) {
         this->processInput(system);
         for (int i = 0; i < 16; i++) {
-            if (system->keypad[i] == 1) {
+            if (system->keypad[i]) {
                 goto end_loop;
             }
         }
@@ -290,12 +298,4 @@ void Display::haltAndAwaitKey(Chip8 *system)
     
     end_loop:
     return;
-}
-
-void Display::destroy()
-{
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyTexture(texture);
-    SDL_DestroyWindow(screen);
-    SDL_Quit();
 }
